@@ -1,9 +1,0 @@
-{
-    "identifier": ".id",
-    "title": ".name",
-    "properties": {
-      "name": ".name",
-      "email": ".email",
-      "created_at": ".created_at"
-    }
-  }

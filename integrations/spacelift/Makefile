@@ -1,0 +1,1 @@
+/mnt/c/Users/hp/Documents/projects/port-spacelift-integration/integrations/venv/lib/python3.12/site-packages/port_ocean/cli/cookiecutter/../../../integrations/_infra/Makefile
