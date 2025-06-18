@@ -100,3 +100,4 @@ class SpaceliftClient:
         """
         data = await self._graphql_query(query)
         return data["data"][kind]
+    
