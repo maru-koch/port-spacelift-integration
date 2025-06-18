@@ -18,17 +18,18 @@ class SpaceliftClient:
         return {"Authorization":f"Bearer {self.token}"}
     
     async def _refresh_token(self) -> str:
-        """Refresh Spacelift API token on expiration."""
         self.logger.info("Refreshing Spacelift API token")
         payload = {"key_id": self.api_key, "key_secret": self.api_secret}
         response = await self.client.post(f"{self.endpoint}/auth", json=payload)
         response.raise_for_status()
-        self.token = response.json()["token"]
+        data = response.json()
+        self.token = data["token"]
+        self.token_expiry = datetime.now() + timedelta(seconds=data.get("expires_in", 3600))  # Default 1 hour
+        self.logger.info(f"Token refreshed, expires at {self.token_expiry}")
         return self.token
-
+    
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def _graphql_query(self, query: str, variables: dict = None) -> dict:
-        """Execute GraphQL query with rate limit handling."""
         if not self.token:
             await self._refresh_token()
         try:
@@ -40,15 +41,18 @@ class SpaceliftClient:
             response.raise_for_status()
             data = response.json()
             
-            # Check rate limit
+            # Dynamic rate limit handling
+            limit = int(response.headers.get("X-RateLimit-Limit", 1000))
             remaining = int(response.headers.get("X-RateLimit-Remaining", 1000))
-            if remaining < 10:
-                self.logger.warning("Rate limit low, slowing down")
+            self.logger.info(f"Rate limit: {remaining}/{limit} remaining")
+            if remaining < max(10, limit * 0.1):  # Trigger retry if <10 or 10% of limit
+                self.logger.warning(f"Rate limit low: {remaining}/{limit}")
                 raise Exception("Rate limit approaching")
-            
+
             return data
         except Exception as e:
             if "401" in str(e):
+                self.logger.info("Token expired, refreshing")
                 await self._refresh_token()
                 return await self._graphql_query(query, variables)
             self.logger.error(f"API error: {str(e)}")
