@@ -1,0 +1,10 @@
+{
+  "identifier": ".id",
+  "title": ".name",
+  "blueprint": "policy",
+  "properties": {
+    "type": ".type",
+    "description": ".description",
+    "createdAt": ".createdAt"
+  }
+}

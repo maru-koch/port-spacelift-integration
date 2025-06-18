@@ -1,0 +1,15 @@
+{
+  "identifier": ".id",
+  "title": ".id",
+  "blueprint": "deployment",
+  "properties": {
+    "state": ".state",
+    "createdAt": ".createdAt",
+    "commitHash": ".commit.hash",
+    "commitMessage": ".commit.message",
+    "triggeredBy": ".triggeredBy"
+  },
+  "relations": {
+    "stack": ".stackId"
+  }
+}
