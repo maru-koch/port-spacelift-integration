@@ -1,6 +1,8 @@
+from loguru import logger
+from datetime import datetime, timedelta
 from port_ocean.utils import http_async_client
 from tenacity import retry, stop_after_attempt, wait_exponential
-from loguru import logger
+
 import queries
 
 class SpaceliftClient:
@@ -11,6 +13,7 @@ class SpaceliftClient:
         self.client = http_async_client
         self.logger = logger
         self.token = None
+        self.token_expiry = None
 
     @property
     def auth_headers(self):
