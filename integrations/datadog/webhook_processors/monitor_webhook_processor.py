@@ -13,7 +13,6 @@ from port_ocean.core.handlers.webhook.webhook_event import (
 )
 from integration import ObjectKind
 
-
 class MonitorWebhookProcessor(AbstractWebhookProcessor):
     async def should_process_event(self, event: WebhookEvent) -> bool:
         return True
