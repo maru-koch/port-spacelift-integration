@@ -14,3 +14,4 @@ integration:
     filters:
       deployment_status: ["queued", "finished"]
       last_n_days: 7
+    additional_kinds: ["integrations", "providers"]
