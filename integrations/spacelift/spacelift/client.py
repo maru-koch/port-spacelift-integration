@@ -1,6 +1,7 @@
 from port_ocean.utils import http_async_client
 from tenacity import retry, stop_after_attempt, wait_exponential
 from loguru import logger
+import queries
 
 class SpaceliftClient:
     def __init__(self, api_key: str, api_secret: str, endpoint: str):
@@ -11,6 +12,11 @@ class SpaceliftClient:
         self.logger = logger
         self.token = None
 
+    @property
+    def auth_headers(self):
+        """Get Authorization headers. """
+        return {"Authorization":f"Bearer {self.token}"}
+    
     async def _refresh_token(self) -> str:
         """Refresh Spacelift API token on expiration."""
         self.logger.info("Refreshing Spacelift API token")
@@ -25,13 +31,11 @@ class SpaceliftClient:
         """Execute GraphQL query with rate limit handling."""
         if not self.token:
             await self._refresh_token()
-
-        headers = {"Authorization": f"Bearer {self.token}"}
         try:
             response = await self.client.post(
                 self.endpoint,
                 json={"query": query, "variables": variables or {}},
-                headers=headers
+                headers=self.auth_headers
             )
             response.raise_for_status()
             data = response.json()
@@ -51,52 +55,16 @@ class SpaceliftClient:
             raise
 
     async def get_spaces(self) -> list[dict]:
-        query = """
-        query {
-          spaces {
-            id
-            name
-            description
-          }
-        }
-        """
-        data = await self._graphql_query(query)
+        data = await self._graphql_query(queries.SPACES)
         return data["data"]["spaces"]
 
     async def get_stacks(self) -> list[dict]:
-        query = """
-        query {
-          stacks {
-            id
-            name
-            state
-            branch
-          }
-        }
-        """
-        data = await self._graphql_query(query)
+        data = await self._graphql_query(queries.STACKS)
         return data["data"]["stacks"]
 
     async def get_deployments(self, filters: dict) -> list[dict]:
         status_filter = filters.get("deployment_status", [])
         time_filter = filters.get("last_n_days", 7)
-        query = """
-        query ($status: [RunState!], $after: String) {
-          runs(states: $status, first: 100, after: $after) {
-            edges {
-              node {
-                id
-                state
-                createdAt
-              }
-            }
-            pageInfo {
-              endCursor
-              hasNextPage
-            }
-          }
-        }
-        """
         variables = {"status": status_filter} if status_filter else {}
         results = []
         has_next = True
@@ -104,7 +72,7 @@ class SpaceliftClient:
 
         while has_next:
             variables["after"] = cursor
-            data = await self._graphql_query(query, variables)
+            data = await self._graphql_query(queries.DEPLOYMENTS, variables)
             runs = data["data"]["runs"]["edges"]
             results.extend([run["node"] for run in runs])
             has_next = data["data"]["runs"]["pageInfo"]["hasNextPage"]
@@ -113,29 +81,11 @@ class SpaceliftClient:
         return results
 
     async def get_policies(self) -> list[dict]:
-        query = """
-        query {
-          policies {
-            id
-            name
-            type
-          }
-        }
-        """
-        data = await self._graphql_query(query)
+        data = await self._graphql_query(queries.POLICIES)
         return data["data"]["policies"]
 
     async def get_users(self) -> list[dict]:
-        query = """
-        query {
-          users {
-            id
-            username
-            email
-          }
-        }
-        """
-        data = await self._graphql_query(query)
+        data = await self._graphql_query(queries.USERS)
         return data["data"]["users"]
 
     async def get_generic_resource(self, kind: str) -> list[dict]:
