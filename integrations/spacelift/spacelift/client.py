@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from port_ocean.utils import http_async_client
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-import queries
+from . import queries
 
 class SpaceliftClient:
     def __init__(self, api_key: str, api_secret: str, endpoint: str):
