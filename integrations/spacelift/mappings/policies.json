@@ -1,10 +1,10 @@
 {
-  "identifier": ".id",
-  "title": ".name",
-  "blueprint": "policy",
-  "properties": {
-    "type": ".type",
-    "description": ".description",
-    "createdAt": ".createdAt"
+    "identifier": ".id",
+    "title": ".name",
+    "properties": {
+      "name": ".name",
+      "description": ".description",
+      "type": ".type",
+      "created_at": ".created_at"
+    }
   }
-}

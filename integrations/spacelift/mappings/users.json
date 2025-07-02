@@ -1,10 +1,9 @@
 {
-  "identifier": ".id",
-  "title": ".username",
-  "blueprint": "user",
-  "properties": {
-    "email": ".email",
-    "role": ".role",
-    "createdAt": ".createdAt"
+    "identifier": ".id",
+    "title": ".name",
+    "properties": {
+      "name": ".name",
+      "email": ".email",
+      "created_at": ".created_at"
+    }
   }
-}

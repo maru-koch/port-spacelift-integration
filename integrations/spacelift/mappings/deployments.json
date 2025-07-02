@@ -1,15 +1,12 @@
 {
-  "identifier": ".id",
-  "title": ".id",
-  "blueprint": "deployment",
-  "properties": {
-    "state": ".state",
-    "createdAt": ".createdAt",
-    "commitHash": ".commit.hash",
-    "commitMessage": ".commit.message",
-    "triggeredBy": ".triggeredBy"
-  },
-  "relations": {
-    "stack": ".stackId"
+    "identifier": ".id",
+    "title": ".id",
+    "properties": {
+      "state": ".state",
+      "stack_id": ".stack_id",
+      "created_at": ".created_at"
+    },
+    "relations": {
+      "stack": ".stack_id"
+    }
   }
-}
