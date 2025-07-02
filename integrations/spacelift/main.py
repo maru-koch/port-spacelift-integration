@@ -28,6 +28,12 @@ class SpaceliftIntegration(OCEAN_INTEGRATION_TYPE):
                 raise
         return self.client 
         
+    @ocean.on_start()
+    async def on_start(self) -> None:
+        """Log integration startup."""
+        logger.info("Starting Port Ocean Spacelift integration")
+        self.init_client()
+        
     @ocean.on_resync("space")
     async def on_resync_spaces(self) -> ASYNC_GENERATOR_RESYNC_TYPE:
         self.log.info("Resyncing spaces")
