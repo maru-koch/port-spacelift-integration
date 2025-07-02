@@ -48,7 +48,7 @@ resources:
     port:
       entity:
         mappings:
-          blueprint: '"space"'
+          blueprint: '"stack"'
           identifier: .id
           title: .name
           properties:
@@ -64,7 +64,7 @@ resources:
     port:
       entity:
         mappings:
-          blueprint: '"space"'
+          blueprint: '"user"'
           identifier: .id
           title: .name
           properties:
