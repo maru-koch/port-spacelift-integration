@@ -41,4 +41,34 @@ resources:
             name: .name
             description: .description
             created_at: .created_at
-  
+
+  - kind: stack
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"space"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            description: .description
+            state: .state
+            created_at: .created_at  
+          relations:
+            space: .space_id
+  - kind: user
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"space"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            email: .email
+            created_at: .created_at  
+    
