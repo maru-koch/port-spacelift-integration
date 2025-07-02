@@ -1,7 +1,6 @@
 port:
   clientId: ${PORT_CLIENT_ID}
   clientSecret: ${PORT_CLIENT_SECRET}
-  baseUrl: https://api.getport.io/v1
 eventListener:
   type: WEBHOOK
 integration:
