@@ -14,7 +14,7 @@ resources:
             created_at: .created_at
           relations:
             stack: stack_id
-  - kind: policies
+  - kind: policy
     selector:
       query: 'true'
     port:
@@ -27,5 +27,18 @@ resources:
             name: .name
             description: .description
             type: .type
+            created_at: .created_at
+  - kind: space
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"space"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            description: .description
             created_at: .created_at
   
