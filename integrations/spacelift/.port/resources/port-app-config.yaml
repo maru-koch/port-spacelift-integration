@@ -1,3 +1,19 @@
+port:
+  client_id: ${PORT_API_CLIENT}
+  client_secret: ${PORT_API_SECRET}
+  base_url: https://api.getport.io
+
+eventListener:
+  type: WEBHOOK
+  shouldResync: true
+
+integration:
+  identifier: spacelift
+  type: spacelift
+  config:
+    api_token: ${SPACELIFT_API_TOKEN}
+    api_endpoint: ${SPACELIFT_API_ENDPOINT}
+
 resources:
   - kind: deployment
     selector:
