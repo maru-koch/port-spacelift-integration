@@ -21,8 +21,8 @@ class SpaceliftIntegration(BaseIntegration):
         if not self.client:
             try:
                 self.client = SpaceliftClient(
-                    api_token=ocean.integration_config["apiToken"],
-                    endpoint=ocean.integration_config["apiEndpoint"]
+                    api_token=ocean.integration_config["api_token"],
+                    endpoint=ocean.integration_config["api_endpoint"]
                 )
                 logger.info("Spacelift client initialized successfully")
             except Exception as e:
