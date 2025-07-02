@@ -6,14 +6,9 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 import queries
 
 class SpaceliftClient:
-    def __init__(self, api_key: str, api_secret: str, endpoint: str):
-        self.api_key = api_key
-        self.api_secret = api_secret
+    def __init__(self, api_token: str, endpoint: str):
         self.endpoint = endpoint
-        self.client = http_async_client
-        self.logger = logger
-        self.token = None
-        self.token_expiry = None
+        self.headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
 
     @property
     def auth_headers(self):
