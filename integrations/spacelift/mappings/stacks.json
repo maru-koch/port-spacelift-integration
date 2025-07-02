@@ -1,14 +1,13 @@
 {
-  "identifier": ".id",
-  "title": ".name",
-  "blueprint": "stack",
-  "properties": {
-    "state": ".state",
-    "branch": ".branch",
-    "createdAt": ".createdAt",
-    "updatedAt": ".updatedAt"
-  },
-  "relations": {
-    "space": ".spaceId"
+    "identifier": ".id",
+    "title": ".name",
+    "properties": {
+      "name": ".name",
+      "description": ".description",
+      "state": ".state",
+      "created_at": ".created_at"
+    },
+    "relations": {
+      "space": ".space_id"
+    }
   }
-}
