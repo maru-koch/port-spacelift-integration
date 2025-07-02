@@ -1,0 +1,6 @@
+port-ocean
+requests
+pytest
+pytest-asyncio
+tenacity
+loguru
