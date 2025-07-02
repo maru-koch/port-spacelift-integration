@@ -1,0 +1,96 @@
+[
+    {
+  "identifier": "deployment",
+  "title": "Deployment",
+  "icon": "Spacelift",
+  "schema": {
+    "properties": {
+      "state": {"type": "string", "title": "State"},
+      "stack_id": {"type": "string", "title": "Stack ID"},
+      "created_at": {"type": "string", "format": "date-time", "title": "Created At"}
+    },
+    "required": ["state"]
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {
+    "stack": {
+      "target": "stack",
+      "required": false,
+      "many": false
+    }
+  }
+},
+{
+  "identifier": "policy",
+  "title": "Policy",
+  "icon": "Spacelift",
+  "schema": {
+    "properties": {
+      "name": {"type": "string", "title": "Name"},
+      "description": {"type": "string", "title": "Description"},
+      "type": {"type": "string", "title": "Policy Type"},
+      "created_at": {"type": "string", "format": "date-time", "title": "Created At"}
+    },
+    "required": ["name"]
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {}
+},
+{
+  "identifier": "space",
+  "title": "Space",
+  "icon": "Spacelift",
+  "schema": {
+    "properties": {
+      "name": {"type": "string", "title": "Name"},
+      "description": {"type": "string", "title": "Description"},
+      "created_at": {"type": "string", "format": "date-time", "title": "Created At"}
+    },
+    "required": ["name"]
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {}
+},
+{
+  "identifier": "stack",
+  "title": "Stack",
+  "icon": "Spacelift",
+  "schema": {
+    "properties": {
+      "name": {"type": "string", "title": "Name"},
+      "description": {"type": "string", "title": "Description"},
+      "state": {"type": "string", "title": "State"},
+      "created_at": {"type": "string", "format": "date-time", "title": "Created At"}
+    },
+    "required": ["name"]
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {
+    "space": {
+      "target": "space",
+      "required": false,
+      "many": false
+    }
+  }
+},
+{
+  "identifier": "user",
+  "title": "User",
+  "icon": "Spacelift",
+  "schema": {
+    "properties": {
+      "name": {"type": "string", "title": "Name"},
+      "email": {"type": "string", "format": "email", "title": "Email"},
+      "created_at": {"type": "string", "format": "date-time", "title": "Created At"}
+    },
+    "required": ["name"]
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {}
+}
+]
