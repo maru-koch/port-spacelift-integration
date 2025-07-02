@@ -3,11 +3,11 @@
     "title": ".name",
     "properties": {
       "name": ".name",
-      "description": ".description // ''",
-      "state": ".state // ''",
-      "created_at": ".created_at // null"
+      "description": ".description",
+      "state": ".state",
+      "created_at": ".created_at"
     },
     "relations": {
-      "space": ".space_id // null"
+      "space": ".space_id"
     }
   }
