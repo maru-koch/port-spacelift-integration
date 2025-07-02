@@ -1,21 +1,20 @@
-
 import os
-import uuid
-import asyncio
 from port_ocean.context.ocean import ocean
-from port_ocean.core.handlers import EntityProcessor
-from port_ocean.core.ocean_types import OCEAN_INTEGRATION_TYPE, ASYNC_GENERATOR_RESYNC_TYPE
-from loguru import logger
+from port_ocean.core.integrations.base import BaseIntegration
+from port_ocean.core.handlers import JQEntityProcessor
 from spacelift.client import SpaceliftClient
+from loguru import logger
+import uuid
+from typing import AsyncGenerator, List, Dict, Any
 from constants import ResourceType
 
-class SpaceliftIntegration(OCEAN_INTEGRATION_TYPE):
+class SpaceliftIntegration(BaseIntegration):
     def __init__(self):
         super().__init__()
         self.client = None
-        self.entity_processor = EntityProcessor()
+        self.entity_processor = JQEntityProcessor()
 
-    def init_client(self):
+    def init_client(self) -> SpaceliftClient:
         """Initialize Spacelift client with correct authentication."""
         if not self.client:
             try:
@@ -27,15 +26,14 @@ class SpaceliftIntegration(OCEAN_INTEGRATION_TYPE):
             except Exception as e:
                 logger.error(f"Failed to initialize Spacelift client: {e}", exc_info=True)
                 raise
-        return self.client 
-        
+        return self.client
+
     @ocean.on_start()
     async def on_start(self) -> None:
         """Log integration startup."""
         logger.info("Starting Port Ocean Spacelift integration")
         self.init_client()
 
-    
     @ocean.on_resync(ResourceType.SPACE)
     async def on_resync_spaces(self) -> AsyncGenerator[List[Dict], None]:
         """Resync spaces with pagination."""
@@ -156,6 +154,6 @@ class SpaceliftIntegration(OCEAN_INTEGRATION_TYPE):
             logger.info(f"Processed webhook for {kind}, resource_id={resource_id}", entity_count=len(entities))
 
 if __name__ == "__main__":
-    from logging_config import setup_logging
+    from log_config import setup_logging
     setup_logging()
     logger.info("Spacelift integration module loaded")
