@@ -1,6 +1,7 @@
 port:
   clientId: ${PORT_CLIENT_ID}
   clientSecret: ${PORT_CLIENT_SECRET}
+  baseUrl: https://api.getport.io  
 eventListener:
   type: WEBHOOK
   shouldResync: true
