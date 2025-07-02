@@ -3,14 +3,10 @@ port:
   clientSecret: ${PORT_CLIENT_SECRET}
 eventListener:
   type: WEBHOOK
+  shouldResync: true
 integration:
-  identifier: spacelift_integration
+  identifier: spacelift
   type: spacelift
   config:
-    api_key: ${SPACELIFT_API_KEY}
-    api_secret: ${SPACELIFT_API_SECRET}
-    api_endpoint: https://<your-account>.app.spacelift.io/graphql
-    filters:
-      deployment_status: ["queued", "finished"]
-      last_n_days: 7
-    additional_kinds: ["integrations", "providers"]
+    apiToken: ${SPACELIFT_API_TOKEN}
+    apiEndpoint: ${SPACELIFT_API_ENDPOINT}
