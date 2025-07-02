@@ -1,13 +1,31 @@
-port:
-  clientId: ${PORT_CLIENT_ID}
-  clientSecret: ${PORT_CLIENT_SECRET}
-  baseUrl: https://api.getport.io  
-eventListener:
-  type: WEBHOOK
-  shouldResync: true
-integration:
-  identifier: spacelift
-  type: spacelift
-  config:
-    apiToken: ${SPACELIFT_API_TOKEN}
-    apiEndpoint: ${SPACELIFT_API_ENDPOINT}
+resources:
+  - kind: deployment
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"deployment"'
+          identifier: .id
+          title: .id
+          properties:
+            state: .state
+            stack_id: .stack_id
+            created_at: .created_at
+          relations:
+            stack: stack_id
+  - kind: policies
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"policy"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            description: .description
+            type: .type
+            created_at: .created_at
+  
