@@ -11,11 +11,7 @@ import constants
 class SpaceliftIntegration(OCEAN_INTEGRATION_TYPE):
     def __init__(self):
         super().__init__()
-        self.client = SpaceliftClient(
-            self.config["api_key"],
-            self.config["api_secret"],
-            self.config["api_endpoint"]
-        )
+        self.client = None
         self.entity_processor = EntityProcessor()
 
     @ocean.on_resync("space")
