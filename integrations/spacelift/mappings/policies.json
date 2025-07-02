@@ -3,8 +3,8 @@
     "title": ".name",
     "properties": {
       "name": ".name",
-      "description": ".description // ''",
-      "type": ".type // ''",
-      "created_at": ".created_at // null"
+      "description": ".description",
+      "type": ".type",
+      "created_at": ".created_at"
     }
   }
