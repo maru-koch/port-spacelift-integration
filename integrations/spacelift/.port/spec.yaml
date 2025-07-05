@@ -1,10 +1,15 @@
-description: spacelift integration for Port Ocean
+title: spacelift
+description: Port Ocean integration for spacelift
 icon: Cookiecutter  # Should be one of the available icons in Port
 features:
   - type: exporter
     section: Under Development  # Should be one of the available sections in Port
     resources:
-      - kind: spacelift-example-kind
+      - kind: deployment
+      - kind: policy
+      - kind: stack
+      - kind: space
+      - kind: user
       # - kind: <ResourceName2>
 configurations:
   - name: myspaceliftToken
