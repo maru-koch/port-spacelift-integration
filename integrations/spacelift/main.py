@@ -26,10 +26,8 @@ async def on_resync_spaces(self) -> AsyncGenerator[List[Dict], None]:
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing spaces")
         client = create_spacelift_client()
-        async for batch in client.get_paginated_spaces():
-            entities = self.entity_processor.map_to_entities(batch, "mappings/spaces.json")
-            logger.debug(f"Yielding {len(entities)} space entities")
-            yield entities
+        async for spaces in client.get_paginated_spaces():
+            yield spaces
 
 @ocean.on_resync(ResourceType.STACK)
 async def on_resync_stacks(self) -> AsyncGenerator[List[Dict], None]:
@@ -38,10 +36,8 @@ async def on_resync_stacks(self) -> AsyncGenerator[List[Dict], None]:
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing stacks")
         client = create_spacelift_client()
-        async for batch in client.get_paginated_stacks():
-            entities = self.entity_processor.map_to_entities(batch, "mappings/stacks.json")
-            logger.debug(f"Yielding {len(entities)} stack entities")
-            yield entities
+        async for stacks in client.get_paginated_stacks():
+            yield stacks
 
 @ocean.on_resync(ResourceType.DEPLOYMENT)
 async def on_resync_deployments(self, filters: Dict = None) -> AsyncGenerator[List[Dict], None]:
@@ -51,10 +47,8 @@ async def on_resync_deployments(self, filters: Dict = None) -> AsyncGenerator[Li
         logger.info("Resyncing deployments")
         client = create_spacelift_client()
         filters = filters or ocean.integration_config.get("filters", {})
-        async for batch in client.get_paginated_deployments(filters):
-            entities = self.entity_processor.map_to_entities(batch, "mappings/deployments.json")
-            logger.debug(f"Yielding {len(entities)} deployment entities")
-            yield entities
+        async for deployments in client.get_paginated_deployments(filters):
+            yield deployments
 
 @ocean.on_resync(ResourceType.POLICY)
 async def on_resync_policies(self) -> AsyncGenerator[List[Dict], None]:
@@ -63,10 +57,8 @@ async def on_resync_policies(self) -> AsyncGenerator[List[Dict], None]:
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing policies")
         client = create_spacelift_client()
-        async for batch in client.get_paginated_policies():
-            entities = self.entity_processor.map_to_entities(batch, "mappings/policies.json")
-            logger.debug(f"Yielding {len(entities)} policy entities")
-            yield entities
+        async for policies in client.get_paginated_policies():
+            yield policies
 
 @ocean.on_resync(ResourceType.USER)
 async def on_resync_users(self) -> AsyncGenerator[List[Dict], None]:
@@ -75,10 +67,8 @@ async def on_resync_users(self) -> AsyncGenerator[List[Dict], None]:
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing users")
         client = create_spacelift_client()
-        async for batch in client.get_paginated_users():
-            entities = self.entity_processor.map_to_entities(batch, "mappings/users.json")
-            logger.debug(f"Yielding {len(entities)} user entities")
-            yield entities
+        async for users in client.get_paginated_users():
+            yield users
 
 @ocean.on_resync()
 async def on_resync_generic(self, kind: str) -> AsyncGenerator[List[Dict], None]:
@@ -92,10 +82,8 @@ async def on_resync_generic(self, kind: str) -> AsyncGenerator[List[Dict], None]
             return
         try:
             client = create_spacelift_client()
-            async for batch in client.get_paginated_generic_resource(kind):
-                entities = self.entity_processor.map_to_entities(batch, mapping_file)
-                logger.debug(f"Yielding {len(entities)} {kind} entities")
-                yield entities
+            async for resources in client.get_paginated_generic_resource(kind):
+                yield resources
         except Exception as e:
             logger.error(f"Error resyncing {kind}: {e}", exc_info=True)
 
