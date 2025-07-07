@@ -1,0 +1,12 @@
+{
+    "identifier": ".id",
+    "title": ".id",
+    "properties": {
+      "state": ".state",
+      "stack_id": ".stack_id",
+      "created_at": ".created_at"
+    },
+    "relations": {
+      "stack": ".stack_id"
+    }
+  }

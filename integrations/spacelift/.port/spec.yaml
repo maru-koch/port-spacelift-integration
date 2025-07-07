@@ -1,0 +1,19 @@
+
+title: spacelift
+description: Spacelift integration for Port Ocean
+icon: spacelift
+features:
+  - type: exporter
+    section: Infrastructure-as-code Management
+    resources:
+      - kind: deployment
+      - kind: policy
+      - kind: space
+      - kind: stack
+      - kind: user
+configurations:
+  - name: apiToken
+    required: true
+    type: string
+    sensitive: true
+    description: The API token used to authenticate requests to Spacelift REST API. To generate an API token, see the <a target="_blank" href="https://docs.spacelift.io/integrations/api">Spacelift documentation</a>.

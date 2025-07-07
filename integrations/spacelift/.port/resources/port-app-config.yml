@@ -1,0 +1,90 @@
+
+port:
+  client_id: ${PORT_API_CLIENT}
+  client_secret: ${PORT_API_SECRET}
+  base_url: https://api.getport.io
+
+eventListener:
+  type: WEBHOOK
+  shouldResync: true
+
+integration:
+  identifier: spacelift
+  type: spacelift
+  config:
+    api_token: ${SPACELIFT_API_TOKEN}
+    api_endpoint: ${SPACELIFT_API_ENDPOINT}
+
+resources:
+  - kind: deployment
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"deployment"'
+          identifier: .id
+          title: .id
+          properties:
+            state: .state
+            stack_id: .stack_id
+            created_at: .created_at
+          relations:
+            stack: stack_id
+  - kind: policy
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"policy"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            description: .description
+            type: .type
+            created_at: .created_at
+  - kind: space
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"space"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            description: .description
+            created_at: .created_at
+
+  - kind: stack
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"stack"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            description: .description
+            state: .state
+            created_at: .created_at  
+          relations:
+            space: .space_id
+  - kind: user
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          blueprint: '"user"'
+          identifier: .id
+          title: .name
+          properties:
+            name: .name
+            email: .email
+            created_at: .created_at  
