@@ -1,4 +1,4 @@
-title: spacelift
+type: spacelift
 description: Port Ocean integration for spacelift
 icon: Cookiecutter  # Should be one of the available icons in Port
 features:
