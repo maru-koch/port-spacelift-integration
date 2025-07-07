@@ -1,20 +1,19 @@
-type: spacelift
-description: Port Ocean integration for spacelift
-icon: Cookiecutter  # Should be one of the available icons in Port
+
+title: spacelift
+description: Spacelift integration for Port Ocean
+icon: spacelift
 features:
   - type: exporter
-    section: Under Development  # Should be one of the available sections in Port
+    section: Infrastructure-as-code Management
     resources:
       - kind: deployment
       - kind: policy
-      - kind: stack
       - kind: space
+      - kind: stack
       - kind: user
-      # - kind: <ResourceName2>
 configurations:
-  - name: myspaceliftToken
-    # required: true
+  - name: apiToken
+    required: true
     type: string
     sensitive: true
-  - name: someApplicationUrl
-    type: url
+    description: The API token used to authenticate requests to Spacelift REST API. To generate an API token, see the <a target="_blank" href="https://docs.spacelift.io/integrations/api">Spacelift documentation</a>.
