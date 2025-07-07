@@ -42,7 +42,7 @@ async def on_resync_spaces(self) -> AsyncGenerator[List[Dict], None]:
     trace_id = str(uuid.uuid4())
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing spaces")
-        client = self.init_client()
+        client = init_client()
         async for batch in client.get_paginated_spaces():
             entities = self.entity_processor.map_to_entities(batch, "mappings/spaces.json")
             logger.debug(f"Yielding {len(entities)} space entities")
@@ -54,7 +54,7 @@ async def on_resync_stacks(self) -> AsyncGenerator[List[Dict], None]:
     trace_id = str(uuid.uuid4())
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing stacks")
-        client = self.init_client()
+        client = init_client()
         async for batch in client.get_paginated_stacks():
             entities = self.entity_processor.map_to_entities(batch, "mappings/stacks.json")
             logger.debug(f"Yielding {len(entities)} stack entities")
@@ -66,7 +66,7 @@ async def on_resync_deployments(self, filters: Dict = None) -> AsyncGenerator[Li
     trace_id = str(uuid.uuid4())
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing deployments")
-        client = self.init_client()
+        client = init_client()
         filters = filters or ocean.integration_config.get("filters", {})
         async for batch in client.get_paginated_deployments(filters):
             entities = self.entity_processor.map_to_entities(batch, "mappings/deployments.json")
@@ -79,7 +79,7 @@ async def on_resync_policies(self) -> AsyncGenerator[List[Dict], None]:
     trace_id = str(uuid.uuid4())
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing policies")
-        client = self.init_client()
+        client = init_client()
         async for batch in client.get_paginated_policies():
             entities = self.entity_processor.map_to_entities(batch, "mappings/policies.json")
             logger.debug(f"Yielding {len(entities)} policy entities")
@@ -91,7 +91,7 @@ async def on_resync_users(self) -> AsyncGenerator[List[Dict], None]:
     trace_id = str(uuid.uuid4())
     with logger.contextualize(trace_id=trace_id):
         logger.info("Resyncing users")
-        client = self.init_client()
+        client = init_client()
         async for batch in client.get_paginated_users():
             entities = self.entity_processor.map_to_entities(batch, "mappings/users.json")
             logger.debug(f"Yielding {len(entities)} user entities")
