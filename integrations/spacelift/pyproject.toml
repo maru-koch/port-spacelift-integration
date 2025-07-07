@@ -7,6 +7,7 @@ authors = ["Nwokocha Maruche <nwokocha.maruche@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.12"
 port_ocean = { version = "^0.24.22", extras = ["cli"] }
+ngrok = "1.4.0"
 
 [tool.poetry.group.dev.dependencies]
 # Uncomment this if you want to debug the ocean core together with your integration
