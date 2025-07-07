@@ -12,7 +12,8 @@ loguru = "^0.7.3"
 requests = "^2.32.4"
 pytest = "^8.4.1"
 pytest-asyncio = "^1.0.0"
-port-ocean = "^0.24.11"
+port-ocean = {extras = ["cli"], version = "^0.25.0"}
+aiolimiter = "^1.2.1"
 
 
 [build-system]

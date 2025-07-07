@@ -1,25 +1,84 @@
-from port_ocean.utils import http_async_client
-from typing import AsyncGenerator, List, Dict, Any
 from loguru import logger
+from aiolimiter import AsyncLimiter
+from httpx import Timeout, HTTPStatusError
+from port_ocean.utils import http_async_client
+from typing import AsyncGenerator, List, Dict, Any, Optional
+
+PAGE_LIMIT = 100
 
 class SpaceliftClient:
     def __init__(self, api_token: str, endpoint: str):
-        self.endpoint = endpoint
-        self.headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
+        self.spacelift_api_token = api_token
+        self.spacelift_endpoint = endpoint.rstrip("/")  # Ensure no trailing slash
+        self.http_client = http_async_client
+        self.http_client.timeout = Timeout(30)
+        self.rate_limiter = AsyncLimiter(100, 30)
 
-    async def _query(self, query: str, variables: Dict = None) -> Dict:
-        """Execute GraphQL query with port_ocean.utils.http_async_client."""
-        try:
-            response = await http_async_client.post(
-                self.endpoint,
-                headers=self.headers,
-                json={"query": query, "variables": variables or {}}
-            )
-            response.raise_for_status()
-            return response.json()
-        except Exception as e:
-            logger.error(f"Failed to query Spacelift API: {e}", exc_info=True)
-            raise
+    @property
+    def headers(self) -> Dict[str, str]:
+        return {
+            "Authorization": f"Bearer {self.spacelift_api_token}",
+            "Content-Type": "application/json",
+        }
+
+    async def _send_request(
+        self,
+        method: str = "GET",
+        url: str | None = None,
+        params: Optional[Dict[str, Any]] = None,
+        json: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Send an HTTP request with rate limiting and error handling."""
+        async with self.rate_limiter:
+            try:
+                response = await self.http_client.request(
+                    method=method,
+                    url=url or self.spacelift_endpoint,
+                    headers=self.headers,
+                    params=params,
+                    json=json,
+                )
+                response.raise_for_status()
+                return response.json()
+            except HTTPStatusError as e:
+                logger.error(
+                    f"HTTP error on {method} {url or self.spacelift_endpoint} "
+                    f"with params: {params}, status: {e.response.status_code}, "
+                    f"response: {e.response.text}"
+                )
+                raise
+            except Exception as e:
+                logger.error(
+                    f"Unexpected error on {method} {url or self.spacelift_endpoint} "
+                    f"with params: {params}, error: {str(e)}"
+                )
+                raise
+
+    async def _query(
+        self, query: str, variables: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Execute a GraphQL query."""
+        payload = {"query": query, "variables": variables or {}}
+        return await self._send_request(
+            method="POST", json=payload
+        )
+
+    async def _fetch_paginated(
+        self, query: str, resource_key: str, variables: Optional[Dict[str, Any]] = None
+    ) -> AsyncGenerator[List[Dict], None]:
+        """Generic pagination handler for Spacelift resources."""
+        cursor = None
+        while True:
+            current_variables = {**variables, "after": cursor} if variables else {"after": cursor}
+            data = await self._query(query, current_variables)
+            edges = data.get("data", {}).get(resource_key, {}).get("edges", [])
+            resources = [edge["node"] for edge in edges]
+            if resources:
+                yield resources
+            page_info = data.get("data", {}).get(resource_key, {}).get("pageInfo", {})
+            if not page_info.get("hasNextPage", False):
+                break
+            cursor = page_info.get("endCursor")
 
     async def get_paginated_spaces(self) -> AsyncGenerator[List[Dict], None]:
         """Fetch spaces with pagination."""
@@ -31,16 +90,8 @@ class SpaceliftClient:
             }
         }
         """
-        cursor = None
-        while True:
-            data = await self._query(query, {"after": cursor})
-            spaces = [edge["node"] for edge in data.get("data", {}).get("spaces", {}).get("edges", [])]
-            if spaces:
-                yield spaces
-            page_info = data.get("data", {}).get("spaces", {}).get("pageInfo", {})
-            if not page_info.get("hasNextPage", False):
-                break
-            cursor = page_info.get("endCursor")
+        async for spaces in self._fetch_paginated(query, "spaces"):
+            yield spaces
 
     async def get_paginated_stacks(self) -> AsyncGenerator[List[Dict], None]:
         """Fetch stacks with pagination."""
@@ -52,18 +103,10 @@ class SpaceliftClient:
             }
         }
         """
-        cursor = None
-        while True:
-            data = await self._query(query, {"after": cursor})
-            stacks = [edge["node"] for edge in data.get("data", {}).get("stacks", {}).get("edges", [])]
-            if stacks:
-                yield stacks
-            page_info = data.get("data", {}).get("stacks", {}).get("pageInfo", {})
-            if not page_info.get("hasNextPage", False):
-                break
-            cursor = page_info.get("endCursor")
+        async for stacks in self._fetch_paginated(query, "stacks"):
+            yield stacks
 
-    async def get_paginated_deployments(self, filters: Dict = None) -> AsyncGenerator[List[Dict], None]:
+    async def get_paginated_deployments(self, filters: Optional[Dict] = None) -> AsyncGenerator[List[Dict], None]:
         """Fetch deployments with pagination."""
         query = """
         query Runs($after: String, $id: ID) {
@@ -73,17 +116,9 @@ class SpaceliftClient:
             }
         }
         """
-        cursor = None
-        variables = {"id": filters.get("id")} if filters else {}
-        while True:
-            data = await self._query(query, {**variables, "after": cursor})
-            runs = [edge["node"] for edge in data.get("data", {}).get("runs", {}).get("edges", [])]
-            if runs:
-                yield runs
-            page_info = data.get("data", {}).get("runs", {}).get("pageInfo", {})
-            if not page_info.get("hasNextPage", False):
-                break
-            cursor = page_info.get("endCursor")
+        variables = {"id": filters.get("id")} if filters and "id" in filters else None
+        async for runs in self._fetch_paginated(query, "runs", variables):
+            yield runs
 
     async def get_paginated_policies(self) -> AsyncGenerator[List[Dict], None]:
         """Fetch policies with pagination."""
@@ -95,16 +130,8 @@ class SpaceliftClient:
             }
         }
         """
-        cursor = None
-        while True:
-            data = await self._query(query, {"after": cursor})
-            policies = [edge["node"] for edge in data.get("data", {}).get("policies", {}).get("edges", [])]
-            if policies:
-                yield policies
-            page_info = data.get("data", {}).get("policies", {}).get("pageInfo", {})
-            if not page_info.get("hasNextPage", False):
-                break
-            cursor = page_info.get("endCursor")
+        async for policies in self._fetch_paginated(query, "policies"):
+            yield policies
 
     async def get_paginated_users(self) -> AsyncGenerator[List[Dict], None]:
         """Fetch users with pagination."""
@@ -116,16 +143,8 @@ class SpaceliftClient:
             }
         }
         """
-        cursor = None
-        while True:
-            data = await self._query(query, {"after": cursor})
-            users = [edge["node"] for edge in data.get("data", {}).get("users", {}).get("edges", [])]
-            if users:
-                yield users
-            page_info = data.get("data", {}).get("users", {}).get("pageInfo", {})
-            if not page_info.get("hasNextPage", False):
-                break
-            cursor = page_info.get("endCursor")
+        async for users in self._fetch_paginated(query, "users"):
+            yield users
 
     async def get_paginated_generic_resource(self, kind: str) -> AsyncGenerator[List[Dict], None]:
         """Placeholder for generic resources."""
