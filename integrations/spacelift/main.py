@@ -156,7 +156,6 @@ async def handle_webhook(self, payload: Dict[Any, Any]) -> None:
         logger.info(f"Processed webhook for {kind}, resource_id={resource_id}", entity_count=len(entities))
 
 
-
 @ocean.on_start()
 async def on_start(self) -> None:
     """Log integration startup."""
