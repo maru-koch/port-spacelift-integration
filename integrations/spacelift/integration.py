@@ -33,6 +33,6 @@ class SpaceliftIntegrationPortAppConfig(PortAppConfig):
         DeploymentConfig
     ]
 
-class MyIntegration(BaseIntegration):
+class SpaceLiftIntegration(BaseIntegration):
     class AppConfigHandlerClass(APIPortAppConfig):
         CONFIG_CLASS = SpaceliftIntegrationPortAppConfig
