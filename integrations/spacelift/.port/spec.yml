@@ -1,6 +1,7 @@
 title: Spacelift
 description: Spacelift integration for Port Ocean
 icon: Spacelift
+
 features:
   - type: exporter
     section: Infrastructure-as-code Management

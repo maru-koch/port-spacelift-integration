@@ -8,11 +8,11 @@ from spacelift.client import SpaceliftClient
 
 
 from typing import AsyncGenerator, List, Dict, Any
-from constants import ResourceType
+from utils import ObjectKind
 
 from initialize import create_spacelift_client
 
-@ocean.on_resync(ResourceType.SPACE)
+@ocean.on_resync(ObjectKind.SPACE)
 async def on_resync_spaces(self) -> AsyncGenerator[List[Dict], None]:
     """Resync spaces with pagination."""
     trace_id = str(uuid.uuid4())
@@ -22,7 +22,7 @@ async def on_resync_spaces(self) -> AsyncGenerator[List[Dict], None]:
         async for spaces in client.get_paginated_spaces():
             yield spaces
 
-@ocean.on_resync(ResourceType.STACK)
+@ocean.on_resync(ObjectKind.STACK)
 async def on_resync_stacks(self) -> AsyncGenerator[List[Dict], None]:
     """Resync stacks with pagination."""
     trace_id = str(uuid.uuid4())
@@ -32,7 +32,7 @@ async def on_resync_stacks(self) -> AsyncGenerator[List[Dict], None]:
         async for stacks in client.get_paginated_stacks():
             yield stacks
 
-@ocean.on_resync(ResourceType.DEPLOYMENT)
+@ocean.on_resync(ObjectKind.DEPLOYMENT)
 async def on_resync_deployments(self, filters: Dict = None) -> AsyncGenerator[List[Dict], None]:
     """Resync deployments with pagination."""
     trace_id = str(uuid.uuid4())
@@ -43,7 +43,7 @@ async def on_resync_deployments(self, filters: Dict = None) -> AsyncGenerator[Li
         async for deployments in client.get_paginated_deployments(filters):
             yield deployments
 
-@ocean.on_resync(ResourceType.POLICY)
+@ocean.on_resync(ObjectKind.POLICY)
 async def on_resync_policies(self) -> AsyncGenerator[List[Dict], None]:
     """Resync policies with pagination."""
     trace_id = str(uuid.uuid4())
@@ -53,7 +53,7 @@ async def on_resync_policies(self) -> AsyncGenerator[List[Dict], None]:
         async for policies in client.get_paginated_policies():
             yield policies
 
-@ocean.on_resync(ResourceType.USER)
+@ocean.on_resync(ObjectKind.USER)
 async def on_resync_users(self) -> AsyncGenerator[List[Dict], None]:
     """Resync users with pagination."""
     trace_id = str(uuid.uuid4())
@@ -86,11 +86,11 @@ async def handle_webhook(self, payload: Dict[Any, Any]) -> None:
         logger.info(f"Received webhook: event={event_type}, resource_id={resource_id}")
         
         kind_map = {
-            "run.created": ResourceType.DEPLOYMENT,
-            "run.finished": ResourceType.DEPLOYMENT,
-            "run.failed": ResourceType.DEPLOYMENT,
-            "stack.created": ResourceType.STACK,
-            "policy.created": ResourceType.POLICY
+            "run.created": ObjectKind.DEPLOYMENT,
+            "run.finished": ObjectKind.DEPLOYMENT,
+            "run.failed": ObjectKind.DEPLOYMENT,
+            "stack.created": ObjectKind.STACK,
+            "policy.created": ObjectKind.POLICY
         }
         kind = kind_map.get(event_type)
         if not kind:
@@ -99,7 +99,7 @@ async def handle_webhook(self, payload: Dict[Any, Any]) -> None:
         
         logger.info(f"Processing webhook for kind: {kind}")
         client = create_spacelift_client()
-        if kind == ResourceType.DEPLOYMENT:
+        if kind == ObjectKind.DEPLOYMENT:
             data = await client.get_paginated_deployments({"id": resource_id})
             data = data[0] if data else []  # Handle single-item batch
         else:

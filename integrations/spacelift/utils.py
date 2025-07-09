@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-class ResourceType(StrEnum):
+class ObjectKind(StrEnum):
     SPACE='space'
     STACK='stack'
     USER='user'
