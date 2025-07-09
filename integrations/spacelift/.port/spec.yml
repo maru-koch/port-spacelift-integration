@@ -1,0 +1,44 @@
+title: Spacelift
+description: Spacelift integration for Port Ocean
+icon: Spacelift
+features:
+  - type: exporter
+    section: Infrastructure-as-code Management
+    resources:
+      - kind: deployment
+      - kind: policy
+      - kind: space
+      - kind: stack
+      - kind: user
+
+configurations:
+  - name: api_token
+    required: true
+    type: string
+    sensitive: true
+    description: The API token used to authenticate requests to Spacelift REST API. To generate an API token, see the <a target="_blank" href="https://docs.spacelift.io/integrations/api">Spacelift documentation</a>.
+ 
+  - name: api_endpoint
+    required: true
+    type: string
+    sensitive: true
+    description: The API endpoint used to connect to Spacelift. This should be the base URL of your Spacelift instance, such as `https://app.spacelift.io/api/v1`. For more information, see the <a target="_blank" href="https://docs.spacelift.io/integrations/api">Spacelift documentation</a>.
+  
+  - name: client_id
+    required: true
+    type: string
+    sensitive: true
+    description: The Port client ID used to authenticate requests to Port Ocean. To generate a Port client ID, see the <a target="_blank" href="https://docs.port.io/docs/port-ocean-api#section/Authentication">Port documentation</a>.
+ 
+  - name: client_secret
+    required: true
+    type: string
+    sensitive: true
+    description: The Port client secret used to authenticate requests to Port Ocean. To generate a Port client secret, see the <a target="_blank" href="https://docs.port.io/docs/port-ocean-api#section/Authentication">Port documentation</a>.
+  
+  - name: base_url
+    required: false
+    type: string
+    sensitive: false
+    default: https://ocean.port.io
+    description: The URL of the Port Ocean instance. Defaults to the public Port Ocean URL.

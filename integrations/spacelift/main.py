@@ -10,14 +10,7 @@ from spacelift.client import SpaceliftClient
 from typing import AsyncGenerator, List, Dict, Any
 from constants import ResourceType
 
-
 from initialize import create_spacelift_client
-
-@ocean.on_start()
-async def on_start(self) -> None:
-    """Log integration startup."""
-    logger.info("Starting Port Ocean Spacelift integration")
-    self.init_client()
 
 @ocean.on_resync(ResourceType.SPACE)
 async def on_resync_spaces(self) -> AsyncGenerator[List[Dict], None]:
@@ -76,10 +69,6 @@ async def on_resync_generic(self, kind: str) -> AsyncGenerator[List[Dict], None]
     trace_id = str(uuid.uuid4())
     with logger.contextualize(trace_id=trace_id):
         logger.info(f"Resyncing generic kind: {kind}")
-        mapping_file = f"mappings/{kind}.json"
-        if not os.path.exists(mapping_file):
-            logger.error(f"Mapping file for kind {kind} not found")
-            return
         try:
             client = create_spacelift_client()
             async for resources in client.get_paginated_generic_resource(kind):
@@ -108,11 +97,6 @@ async def handle_webhook(self, payload: Dict[Any, Any]) -> None:
             logger.warning(f"Unsupported webhook event: {event_type}")
             return
         
-        mapping_file = f"mappings/{kind}.json"
-        if not os.path.exists(mapping_file):
-            logger.error(f"Mapping file for kind {kind} not found")
-            return
-        
         logger.info(f"Processing webhook for kind: {kind}")
         client = create_spacelift_client()
         if kind == ResourceType.DEPLOYMENT:
@@ -122,7 +106,11 @@ async def handle_webhook(self, payload: Dict[Any, Any]) -> None:
             data = await client.get_paginated_generic_resource(kind)
             data = data[0] if data else []
         
-        entities = self.entity_processor.map_to_entities(data, mapping_file)
-        await ocean.port_client.upsert_entities(kind, entities)
-        logger.info(f"Processed webhook for {kind}, resource_id={resource_id}", entity_count=len(entities))
+        logger.info(f"Processed webhook for {kind}, resource_id={resource_id}")
 
+@ocean.on_start()
+async def on_start() -> None:
+    """Log integration startup."""
+    logger.info("Starting Port Ocean Spacelift integration")
+    print("Spacelift integration is starting...")
+    # create_spacelift_client()
